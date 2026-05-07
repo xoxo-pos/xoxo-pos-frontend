@@ -1,7 +1,12 @@
 import axios from 'axios'
 
+const API_URL = import.meta.env.VITE_API_URL
+
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://xoxo-pos-backend-production.up.railway.app/api'
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json'
+  }
 })
 
 api.interceptors.request.use((config) => {
