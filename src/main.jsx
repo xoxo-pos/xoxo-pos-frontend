@@ -38,11 +38,17 @@ function Login({ onLogin }) {
   const [username, setUsername] = useState('admin')
   const [password, setPassword] = useState('admin123')
   const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const login = async () => {
     try {
-      await api.post('/auth/setup-admin')
-      const response = await api.post('/auth/login', { username, password })
+      setError('')
+      setLoading(true)
+
+      const response = await api.post('/auth/login', {
+        username,
+        password
+      })
 
       localStorage.setItem('xoxo_token', response.data.token)
       localStorage.setItem('xoxo_user', JSON.stringify(response.data))
@@ -50,6 +56,8 @@ function Login({ onLogin }) {
       onLogin()
     } catch (e) {
       setError(e.response?.data?.message || 'No se pudo entrar')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -71,9 +79,14 @@ function Login({ onLogin }) {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Contraseña"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') login()
+          }}
         />
 
-        <button onClick={login}>Entrar</button>
+        <button onClick={login} disabled={loading}>
+          {loading ? 'Entrando...' : 'Entrar'}
+        </button>
 
         {error && <div className="error">{error}</div>}
 
